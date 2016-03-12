@@ -23,9 +23,12 @@ python-deps:
 build:
 	@mkdir -p build
 	cd venv/lib/python2.7/site-packages && \
+		zip -r $(WORK_DIR)/build/Authorizer.zip * && \
 		zip -r $(WORK_DIR)/build/Registration.zip * && \
 		zip -r $(WORK_DIR)/build/Login.zip *
 	cd src && \
+		zip -r $(WORK_DIR)/build/Authorizer.zip Authorizer.py && \
+		zip -r $(WORK_DIR)/build/Secured.zip Secured.py && \
 		zip -r $(WORK_DIR)/build/Registration.zip Registration.py && \
 		zip -r $(WORK_DIR)/build/Login.zip Login.py
 
@@ -40,6 +43,16 @@ update:
 		--profile lambda \
 		--function-name Login \
 		--zip-file fileb://$(WORK_DIR)/build/Login.zip
+	aws lambda update-function-code \
+		--region ap-northeast-1 \
+		--profile lambda \
+		--function-name Authorizer \
+		--zip-file fileb://$(WORK_DIR)/build/Authorizer.zip
+	aws lambda update-function-code \
+			--region ap-northeast-1 \
+			--profile lambda \
+			--function-name Secured \
+			--zip-file fileb://$(WORK_DIR)/build/Secured.zip
 
 .PHONY: create-lambda
 
@@ -57,6 +70,22 @@ create-lambda:
 		--zip-file fileb://$(WORK_DIR)/build/Login.zip \
 		--role arn:aws:iam::990529572879:role/execution-role \
 		--handler Login.lambda_handler \
+		--runtime python2.7 \
+		--region ap-northeast-1  \
+		--profile lambda
+	aws lambda create-function \
+		--function-name Authorizer \
+		--zip-file fileb://$(WORK_DIR)/build/Authorizer.zip \
+		--role arn:aws:iam::990529572879:role/execution-role \
+		--handler Authorizer.lambda_handler \
+		--runtime python2.7 \
+		--region ap-northeast-1  \
+		--profile lambda
+	aws lambda create-function \
+		--function-name Secured \
+		--zip-file fileb://$(WORK_DIR)/build/Secured.zip \
+		--role arn:aws:iam::990529572879:role/execution-role \
+		--handler Secured.lambda_handler \
 		--runtime python2.7 \
 		--region ap-northeast-1  \
 		--profile lambda
