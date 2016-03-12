@@ -23,13 +23,40 @@ python-deps:
 build:
 	@mkdir -p build
 	cd venv/lib/python2.7/site-packages && \
-		zip -r $(WORK_DIR)/build/Registration.zip *
+		zip -r $(WORK_DIR)/build/Registration.zip * && \
+		zip -r $(WORK_DIR)/build/Login.zip *
 	cd src && \
-		zip -r $(WORK_DIR)/build/Registration.zip Registration.py
+		zip -r $(WORK_DIR)/build/Registration.zip Registration.py && \
+		zip -r $(WORK_DIR)/build/Login.zip Login.py
 
 update:
 	aws lambda update-function-code \
-	  --region ap-northeast-1 \
+	  	--region ap-northeast-1 \
 		--profile lambda \
 		--function-name Registration \
 		--zip-file fileb://$(WORK_DIR)/build/Registration.zip
+	aws lambda update-function-code \
+		--region ap-northeast-1 \
+		--profile lambda \
+		--function-name Login \
+		--zip-file fileb://$(WORK_DIR)/build/Login.zip
+
+.PHONY: create-lambda
+
+create-lambda:
+	aws lambda create-function \
+		--function-name Registration \
+		--zip-file fileb://$(WORK_DIR)/build/Registration.zip \
+		--role arn:aws:iam::990529572879:role/execution-role \
+		--handler Registration.lambda_handler \
+		--runtime python2.7 \
+		--region ap-northeast-1  \
+		--profile lambda
+	aws lambda create-function \
+		--function-name Login \
+		--zip-file fileb://$(WORK_DIR)/build/Login.zip \
+		--role arn:aws:iam::990529572879:role/execution-role \
+		--handler Login.lambda_handler \
+		--runtime python2.7 \
+		--region ap-northeast-1  \
+		--profile lambda
