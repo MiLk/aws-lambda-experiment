@@ -33,6 +33,21 @@
             "parentId": "uy9v379tvg"
         },
         {
+            "path": "/upload",
+            "id": "adjx35",
+            "pathPart": "upload",
+            "parentId": "uy9v379tvg"
+        },
+        {
+            "path": "/upload/request",
+            "resourceMethods": {
+                "POST": {}
+            },
+            "id": "exoxzl",
+            "pathPart": "request",
+            "parentId": "adjx35"
+        },
+        {
             "path": "/login",
             "resourceMethods": {
                 "POST": {}
@@ -161,6 +176,52 @@
     "requestParameters": {
         "method.request.header.X-Access-Token": false
     },
+    "authorizerId": "5pyati"
+}
+```
+
+### POST `/upload/request`
+
+```json
+{
+    "methodResponses": {
+        "200": {
+            "responseModels": {
+                "application/json": "Empty"
+            }, 
+            "statusCode": "200"
+        }
+    }, 
+    "requestModels": {
+        "application/json": "TokenRequest"
+    }, 
+    "authorizationType": "CUSTOM", 
+    "apiKeyRequired": false, 
+    "httpMethod": "POST", 
+    "methodIntegration": {
+        "integrationResponses": {
+            "200": {
+                "responseTemplates": {
+                    "application/json": null
+                }, 
+                "statusCode": "200"
+            }
+        }, 
+        "cacheKeyParameters": [], 
+        "requestParameters": {
+            "integration.request.header.X-Access-Token": "method.request.header.X-Access-Token"
+        }, 
+        "uri": "arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-northeast-1:990529572879:function:RequestToken/invocations", 
+        "httpMethod": "POST", 
+        "requestTemplates": {
+            "application/json": "{\n    \"authorizationToken\": \"$input.params('X-Access-Token')\",\n    \"path\": \"$input.params('X-Path')\"\n}"
+        }, 
+        "cacheNamespace": "exoxzl", 
+        "type": "AWS"
+    }, 
+    "requestParameters": {
+        "method.request.header.X-Access-Token": false
+    }, 
     "authorizerId": "5pyati"
 }
 ```
