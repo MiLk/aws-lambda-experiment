@@ -24,11 +24,13 @@ build:
 	@mkdir -p build
 	cd venv/lib/python2.7/site-packages && \
 		zip -r $(WORK_DIR)/build/Authorizer.zip * && \
+		zip -r $(WORK_DIR)/build/RequestToken.zip * && \
 		zip -r $(WORK_DIR)/build/Registration.zip * && \
 		zip -r $(WORK_DIR)/build/Login.zip *
 	cd src && \
 		zip -r $(WORK_DIR)/build/Authorizer.zip Authorizer.py && \
 		zip -r $(WORK_DIR)/build/Secured.zip Secured.py && \
+		zip -r $(WORK_DIR)/build/RequestToken.zip RequestToken.py && \
 		zip -r $(WORK_DIR)/build/Registration.zip Registration.py && \
 		zip -r $(WORK_DIR)/build/Login.zip Login.py
 
@@ -49,10 +51,15 @@ update:
 		--function-name Authorizer \
 		--zip-file fileb://$(WORK_DIR)/build/Authorizer.zip
 	aws lambda update-function-code \
-			--region ap-northeast-1 \
-			--profile lambda \
-			--function-name Secured \
-			--zip-file fileb://$(WORK_DIR)/build/Secured.zip
+		--region ap-northeast-1 \
+		--profile lambda \
+		--function-name Secured \
+		--zip-file fileb://$(WORK_DIR)/build/Secured.zip
+	aws lambda update-function-code \
+		--region ap-northeast-1 \
+		--profile lambda \
+		--function-name RequestToken \
+		--zip-file fileb://$(WORK_DIR)/build/RequestToken.zip
 
 .PHONY: create-lambda
 
@@ -86,6 +93,14 @@ create-lambda:
 		--zip-file fileb://$(WORK_DIR)/build/Secured.zip \
 		--role arn:aws:iam::990529572879:role/execution-role \
 		--handler Secured.lambda_handler \
+		--runtime python2.7 \
+		--region ap-northeast-1  \
+		--profile lambda
+	aws lambda create-function \
+		--function-name RequestToken \
+		--zip-file fileb://$(WORK_DIR)/build/RequestToken.zip \
+		--role arn:aws:iam::990529572879:role/execution-role \
+		--handler RequestToken.lambda_handler \
 		--runtime python2.7 \
 		--region ap-northeast-1  \
 		--profile lambda
